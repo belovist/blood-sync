@@ -43,38 +43,26 @@ export function Navigation({ onRoleSelect }: NavigationProps) {
         <div className="flex items-center gap-8">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="text-white text-xs font-medium hover:text-[#f00a0a] transition-colors"
+            className="text-white text-s font-medium hover:text-[#f00a0a] transition-colors"
           >
             Home
           </button>
           <button
             onClick={() => scrollToSection('features')}
-            className="text-white text-xs font-medium hover:text-[#f00a0a] transition-colors"
+            className="text-white text-s font-medium hover:text-[#f00a0a] transition-colors"
           >
             Features
           </button>
           <button
             onClick={() => scrollToSection('how-it-works')}
-            className="text-white text-xs font-medium hover:text-[#f00a0a] transition-colors"
+            className="text-white text-s font-medium hover:text-[#f00a0a] transition-colors"
           >
             How it works
-          </button>
-          <button
-            onClick={() => scrollToSection('contact')}
-            className="text-white text-xs font-medium hover:text-[#f00a0a] transition-colors"
-          >
-            Contact Us
           </button>
         </div>
 
         {/* Right Side Actions */}
         <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-[#930101] rounded-full transition-colors">
-            <Moon className="w-5 h-5 text-white" />
-          </button>
-          <button className="p-2 hover:bg-[#930101] rounded-full transition-colors">
-            <Languages className="w-5 h-5 text-white" />
-          </button>
           <button 
             onClick={() => setShowRoleModal(true)}
             className="bg-[#930101] text-white text-xs font-medium px-6 py-2 rounded-full hover:bg-[#b01111] transition-all hover:shadow-lg"
