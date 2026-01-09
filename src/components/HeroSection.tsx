@@ -51,18 +51,6 @@ export function HeroSection({ onRoleSelect }: HeroSectionProps) {
         <div className={`flex gap-8 justify-center items-center transition-all duration-500 ${
           showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}>
-          <RoleButton
-            label="DONOR"
-            onClick={() => onRoleSelect('donor')}
-          />
-          <RoleButton
-            label="BLOOD BANK"
-            onClick={() => onRoleSelect('blood-bank')}
-          />
-          <RoleButton
-            label="HOSPITAL"
-            onClick={() => onRoleSelect('hospital')}
-          />
         </div>
       </div>
     </section>

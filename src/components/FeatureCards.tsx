@@ -9,8 +9,8 @@ export function FeatureCards() {
     <section id="features" className="relative px-10 py-20 space-y-24">
       <FeatureCard
         title="Emergency Priority Mode"
-        description="Emergency Priority Mode lets hospitals send an instant SOS, alerting nearby donors so blood reaches patients fast—when every second counts."
-        expandedContent="When activated, Emergency Priority Mode bypasses normal request queues and sends instant push notifications to all eligible donors within a 10km radius. The system prioritizes blood type matching and proximity, ensuring the fastest possible response time. Real-time tracking shows donor responses and estimated arrival times."
+        description="Emergency Pandemic Mode empowers hospitals to respond instantly during pandemics and Act-of-God situations, when demand for blood and critical supplies rises without warning."
+        expandedContent="When activated, the system bypasses standard send-receive protocols and automatically connects with all nearby blood banks. Requests are broadcast simultaneously to ensure rapid stocking of essential blood units and supplies. Real-time visibility allows hospitals to track confirmations, incoming stock, and expected delivery timelines—helping them stay prepared when every moment matters."
         image={imgEmergency}
         icon={<Siren className="w-16 h-16" />}
         align="left"
@@ -19,7 +19,7 @@ export function FeatureCards() {
       <FeatureCard
         title="Location Based Search"
         description="Google Maps integration ensures you can find nearby blood banks & hospitals, so you always know where to donate blood & how."
-        expandedContent="Our advanced geolocation system integrates with Google Maps to show real-time availability of blood banks and hospitals. Filter by blood type, operating hours, and distance. Get turn-by-turn directions and estimated wait times. Save your favorite locations for quick access during emergencies."
+        expandedContent="Our advanced geolocation system integrates with Google Maps to show real-time availability of blood banks and hospitals.Get turn-by-turn directions in google maps.Save your favorite locations for quick access during emergencies."
         image={imgLocation}
         icon={<MapPin className="w-16 h-16" />}
         align="right"
@@ -31,7 +31,7 @@ export function FeatureCards() {
         expandedContent="Our WebSocket-based communication system provides instant updates across all connected devices. Hospitals, blood banks, and donors receive synchronized information without delay. Chat functionality allows direct coordination between parties. All communications are encrypted and HIPAA-compliant for maximum security."
         image={imgComm}
         icon={<Radio className="w-16 h-16" />}
-        align="center"
+        align="left"
       />
     </section>
   );
@@ -66,7 +66,7 @@ function FeatureCard({ title, description, expandedContent, image, icon, align }
           
           {/* Image */}
           <div className="relative">
-            <div className={`w-[200px] h-[200px] transition-all duration-500 ${
+            <div className={`w-[220px] h-[200px] transition-all duration-500 ${
               isExpanded ? 'scale-105' : 'scale-100'
             }`}>
               <img 
