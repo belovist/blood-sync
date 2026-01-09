@@ -160,15 +160,3 @@ function BloodBankCard({
     </div>
   );
 }
-
-  return (
-    <div className="flex gap-3 pb-3 border-b border-white/5 last:border-0">
-      <span className={`w-2 h-2 rounded-full mt-2 ${colors[type]}`} />
-      <div>
-        <div className="text-white text-sm">{title}</div>
-        <div className="text-[#a3a3a3] text-xs">{message}</div>
-        <div className="text-[#a3a3a3] text-xs">{time}</div>
-      </div>
-    </div>
-  );
-}
