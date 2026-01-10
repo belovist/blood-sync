@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { UserRole } from '../App';
 import { useAuth } from './AuthProvider';
@@ -26,19 +26,10 @@ const roleConfig = {
 };
 
 export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: LoginScreenProps) {
-  const { login: loginAuth, error: authError, isLoading: authLoading } = useAuth();
+  const { login, isLoading, error } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  
-  // Sync error from AuthProvider
-  useEffect(() => {
-    if (authError) {
-      setError(authError);
-    }
-  }, [authError]);
 
   if (!role) {
     return null;
@@ -50,31 +41,13 @@ export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: Lo
     return null;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
-
-    try {
-      // Use AuthProvider's login method which handles role check and state updates
-      const success = await loginAuth(email, password, role);
-      
-      if (success) {
-        // If successful, call onLoginSuccess callback
-        setError('');
+    login(email, password, role).then(() => {
+      if (onLoginSuccess) {
         onLoginSuccess();
-      } else {
-        // Error will be set by AuthProvider and synced via useEffect
-        // Show a generic message if no specific error is set yet
-        if (!authError) {
-          setError('Login failed. Please check your credentials.');
-        }
       }
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   return (

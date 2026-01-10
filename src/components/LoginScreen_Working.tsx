@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { UserRole } from '../App';
-import { useAuth } from './AuthProvider';
+import { authAPI } from '../services/api';
 
 interface LoginScreenProps {
   role: UserRole;
@@ -26,19 +26,11 @@ const roleConfig = {
 };
 
 export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: LoginScreenProps) {
-  const { login: loginAuth, error: authError, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
-  // Sync error from AuthProvider
-  useEffect(() => {
-    if (authError) {
-      setError(authError);
-    }
-  }, [authError]);
 
   if (!role) {
     return null;
@@ -56,19 +48,20 @@ export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: Lo
     setIsLoading(true);
 
     try {
-      // Use AuthProvider's login method which handles role check and state updates
-      const success = await loginAuth(email, password, role);
-      
-      if (success) {
-        // If successful, call onLoginSuccess callback
-        setError('');
+      const response = await authAPI.login(email, password);
+      if (response.success) {
+        // Check if user role matches selected role
+        if (response.data.user.role !== role) {
+          setError(`This account is registered as a ${response.data.user.role}. Please use the correct login page.`);
+          return;
+        }
+        
+        // Store user data and token
+        localStorage.setItem('bloodsync_user', JSON.stringify(response.data.user));
+        localStorage.setItem('bloodsync_token', response.data.token);
         onLoginSuccess();
       } else {
-        // Error will be set by AuthProvider and synced via useEffect
-        // Show a generic message if no specific error is set yet
-        if (!authError) {
-          setError('Login failed. Please check your credentials.');
-        }
+        setError(response.message || 'Login failed');
       }
     } catch (err: any) {
       setError(err.message || 'Login failed');

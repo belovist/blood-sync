@@ -1,50 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { LandingPage } from './components/LandingPage';
 import { LoginScreen } from './components/LoginScreen';
+import { Dashboard } from './components/Dashboard';
 import { DonorRegister } from './components/DonorRegister';
 import { HospitalRegister } from './components/HospitalRegister';
 import { BloodBankRegister } from './components/BloodBankRegister';
-import { DonorDashboard } from './components/DonorDashboard';
-import { HospitalDashboard } from './components/HospitalDashboard';
-import { BloodBankDashboard } from './components/BloodBankDashboard';
-import { useAuth } from './components/AuthProvider';
 
 export type UserRole = 'donor' | 'blood-bank' | 'hospital' | null;
 
-function AppContent() {
-  const { user, logout } = useAuth();
+export default function App() {
   const [selectedRole, setSelectedRole] = useState<UserRole>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-
-  // Update selectedRole based on user
-  useEffect(() => {
-    if (user && user.role) {
-      setSelectedRole(user.role);
-    } else if (!user) {
-      // Clear selectedRole when user logs out
-      setSelectedRole(null);
-      setIsRegistering(false);
-    }
-  }, [user]);
 
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role);
+    setIsLoggedIn(false);
     setIsRegistering(false);
   };
 
   const handleBack = () => {
     setSelectedRole(null);
+    setIsLoggedIn(false);
     setIsRegistering(false);
   };
 
   const handleLoginSuccess = () => {
-    // Login success is handled by AuthProvider
-    // The user will be set automatically and App will re-render
+    setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
-    logout();
     setSelectedRole(null);
+    setIsLoggedIn(false);
     setIsRegistering(false);
   };
 
@@ -56,17 +43,9 @@ function AppContent() {
     setIsRegistering(false);
   };
 
-  // Show Dashboard if logged in and user exists
-  if (user && user.role) {
-    if (user.role === 'donor') {
-      return <DonorDashboard />;
-    }
-    if (user.role === 'hospital') {
-      return <HospitalDashboard />;
-    }
-    if (user.role === 'blood-bank') {
-      return <BloodBankDashboard />;
-    }
+  // Show Dashboard if logged in
+  if (isLoggedIn && selectedRole) {
+    return <Dashboard role={selectedRole} onLogout={handleLogout} />;
   }
 
   // Show Register Screen if registering
@@ -88,7 +67,7 @@ function AppContent() {
   }
 
   // Show Login Screen if role selected but not logged in
-  if (selectedRole && !user) {
+  if (selectedRole && !isLoggedIn) {
     return (
       <LoginScreen 
         role={selectedRole} 
@@ -101,8 +80,4 @@ function AppContent() {
 
   // Show Landing Page by default
   return <LandingPage onRoleSelect={handleRoleSelect} />;
-}
-
-export default function App() {
-  return <AppContent />;
 }

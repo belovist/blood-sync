@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import imgLogo from "figma:asset/6c97523942fe730fbd4ae098955eb28b9f9eefad.png";
+import { authAPI } from '../services/api';
 
 interface HospitalRegisterProps {
   onBack: () => void;
@@ -9,7 +10,7 @@ interface HospitalRegisterProps {
 
 export function HospitalRegister({ onBack, onRegisterSuccess }: HospitalRegisterProps) {
   const [formData, setFormData] = useState({
-    name: '',
+    hospitalName: '',
     email: '',
     address: '',
     password: '',
@@ -24,10 +25,10 @@ export function HospitalRegister({ onBack, onRegisterSuccess }: HospitalRegister
     const newErrors: Record<string, string> = {};
 
     // Name validation
-    if (!formData.name) {
-      newErrors.name = 'Hospital name is required';
-    } else if (formData.name.length < 3) {
-      newErrors.name = 'Hospital name must be at least 3 characters';
+    if (!formData.hospitalName) {
+      newErrors.hospitalName = 'Hospital name is required';
+    } else if (formData.hospitalName.length < 3) {
+      newErrors.hospitalName = 'Hospital name must be at least 3 characters';
     }
 
     // Email validation
@@ -62,21 +63,40 @@ export function HospitalRegister({ onBack, onRegisterSuccess }: HospitalRegister
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
+    console.log('=== HOSPITAL REGISTRATION SUBMIT ===');
+    console.log('Form data:', formData);
     
     if (!validateForm()) {
+      console.log('Validation failed');
       return;
     }
 
+    console.log('Validation passed, starting registration...');
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      console.log('Calling API...');
+      const response = await authAPI.registerHospital(formData);
+      console.log('API response:', response);
+      
+      if (response.success) {
+        // Store user data and token
+        localStorage.setItem('bloodsync_user', JSON.stringify(response.data.user));
+        localStorage.setItem('bloodsync_token', response.data.token);
+        console.log('Registration successful, calling onRegisterSuccess');
+        onRegisterSuccess();
+      } else {
+        console.log('Registration failed:', response.message);
+        setErrors({ general: response.message || 'Registration failed' });
+      }
+    } catch (error: any) {
+      console.log('Registration error:', error);
+      setErrors({ general: error.message || 'Registration failed' });
+    } finally {
       setIsLoading(false);
-      // Redirect to login page
-      onRegisterSuccess();
-    }, 1500);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -117,6 +137,13 @@ export function HospitalRegister({ onBack, onRegisterSuccess }: HospitalRegister
             <p className="text-[#a3a3a3] text-sm">Register your hospital to request blood supplies</p>
           </div>
 
+          {/* General Error Display */}
+          {errors.general && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-6">
+              <p className="text-red-400 text-sm">{errors.general}</p>
+            </div>
+          )}
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name Input */}
@@ -125,19 +152,19 @@ export function HospitalRegister({ onBack, onRegisterSuccess }: HospitalRegister
                 Hospital Name
               </label>
               <input
-                id="name"
+                id="hospitalName"
                 type="text"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
+                value={formData.hospitalName}
+                onChange={(e) => handleInputChange('hospitalName', e.target.value)}
                 placeholder="Enter hospital name"
                 className={`w-full bg-[#0e0e10] border rounded px-4 py-3 text-white placeholder:text-white/30 focus:outline-none transition-colors ${
-                  errors.name 
+                  errors.hospitalName 
                     ? 'border-red-500 focus:border-red-500' 
                     : 'border-white/10 focus:border-[#dc2626]'
                 }`}
               />
-              {errors.name && (
-                <p className="text-red-400 text-xs mt-1">{errors.name}</p>
+              {errors.hospitalName && (
+                <p className="text-red-400 text-xs mt-1">{errors.hospitalName}</p>
               )}
             </div>
 

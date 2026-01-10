@@ -1,20 +1,21 @@
 import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { useAuth } from './AuthProvider';
 import imgLogo from "figma:asset/6c97523942fe730fbd4ae098955eb28b9f9eefad.png";
-import { authAPI } from '../services/api';
 
-interface BloodBankRegisterProps {
+interface DonorRegisterProps {
   onBack: () => void;
   onRegisterSuccess: () => void;
 }
 
-export function BloodBankRegister({ onBack, onRegisterSuccess }: BloodBankRegisterProps) {
+export function DonorRegister({ onBack, onRegisterSuccess }: DonorRegisterProps) {
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
-    bloodBankName: '',
-    email: '',
-    address: '',
+    phone: '',
+    pincode: '',
     password: '',
     confirmPassword: '',
+    bloodGroup: 'O+',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -24,25 +25,18 @@ export function BloodBankRegister({ onBack, onRegisterSuccess }: BloodBankRegist
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    // Name validation
-    if (!formData.bloodBankName) {
-      newErrors.bloodBankName = 'Blood bank name is required';
-    } else if (formData.bloodBankName.length < 3) {
-      newErrors.bloodBankName = 'Blood bank name must be at least 3 characters';
+    // Phone validation (10 digits)
+    if (!formData.phone) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      newErrors.phone = 'Phone number must be 10 digits';
     }
 
-    // Email validation
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    // Address validation
-    if (!formData.address) {
-      newErrors.address = 'Address is required';
-    } else if (formData.address.length < 10) {
-      newErrors.address = 'Please enter a complete address';
+    // Pincode validation (6 digits)
+    if (!formData.pincode) {
+      newErrors.pincode = 'Pincode is required';
+    } else if (!/^\d{6}$/.test(formData.pincode)) {
+      newErrors.pincode = 'Pincode must be 6 digits';
     }
 
     // Password validation
@@ -63,36 +57,20 @@ export function BloodBankRegister({ onBack, onRegisterSuccess }: BloodBankRegist
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('=== BLOOD BANK REGISTRATION SUBMIT ===');
-    console.log('Form data:', formData);
     
     if (!validateForm()) {
-      console.log('Validation failed');
       return;
     }
 
-    console.log('Validation passed, starting registration...');
     setIsLoading(true);
 
     try {
-      console.log('Calling API...');
-      const response = await authAPI.registerBloodBank(formData);
-      console.log('API response:', response);
-      
-      if (response.success) {
-        // Store user data and token
-        localStorage.setItem('bloodsync_user', JSON.stringify(response.data.user));
-        localStorage.setItem('bloodsync_token', response.data.token);
-        console.log('Registration successful, calling onRegisterSuccess');
-        onRegisterSuccess();
-      } else {
-        console.log('Registration failed:', response.message);
-        setErrors({ general: response.message || 'Registration failed' });
-      }
+      await register(formData, 'donor');
+      onRegisterSuccess();
     } catch (error: any) {
-      console.log('Registration error:', error);
+      console.error('Registration error:', error);
       setErrors({ general: error.message || 'Registration failed' });
     } finally {
       setIsLoading(false);
@@ -133,82 +111,55 @@ export function BloodBankRegister({ onBack, onRegisterSuccess }: BloodBankRegist
         <div className="bg-[#171717] border border-white/10 rounded-lg p-10">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-white text-3xl mb-2">Create Blood Bank Account</h1>
-            <p className="text-[#a3a3a3] text-sm">Register your blood bank to coordinate blood supply</p>
+            <h1 className="text-white text-3xl mb-2">Create Donor Account</h1>
+            <p className="text-[#a3a3a3] text-sm">Join us in saving lives through blood donation</p>
           </div>
-
-          {/* General Error Display */}
-          {errors.general && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-6">
-              <p className="text-red-400 text-sm">{errors.general}</p>
-            </div>
-          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Name Input */}
+            {/* Phone Number Input */}
             <div>
-              <label htmlFor="name" className="block text-white text-sm mb-2">
-                Blood Bank Name
+              <label htmlFor="phone" className="block text-white text-sm mb-2">
+                Phone Number
               </label>
               <input
-                id="bloodBankName"
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="Enter 10-digit phone number"
+                maxLength={10}
+                className={`w-full bg-[#0e0e10] border rounded px-4 py-3 text-white placeholder:text-white/30 focus:outline-none transition-colors ${
+                  errors.phone 
+                    ? 'border-red-500 focus:border-red-500' 
+                    : 'border-white/10 focus:border-[#dc2626]'
+                }`}
+              />
+              {errors.phone && (
+                <p className="text-red-400 text-xs mt-1">{errors.phone}</p>
+              )}
+            </div>
+
+            {/* Pincode Input */}
+            <div>
+              <label htmlFor="pincode" className="block text-white text-sm mb-2">
+                Pincode
+              </label>
+              <input
+                id="pincode"
                 type="text"
-                value={formData.bloodBankName}
-                onChange={(e) => handleInputChange('bloodBankName', e.target.value)}
-                placeholder="Enter blood bank name"
+                value={formData.pincode}
+                onChange={(e) => handleInputChange('pincode', e.target.value)}
+                placeholder="Enter 6-digit pincode"
+                maxLength={6}
                 className={`w-full bg-[#0e0e10] border rounded px-4 py-3 text-white placeholder:text-white/30 focus:outline-none transition-colors ${
-                  errors.bloodBankName 
+                  errors.pincode 
                     ? 'border-red-500 focus:border-red-500' 
                     : 'border-white/10 focus:border-[#dc2626]'
                 }`}
               />
-              {errors.bloodBankName && (
-                <p className="text-red-400 text-xs mt-1">{errors.bloodBankName}</p>
-              )}
-            </div>
-
-            {/* Email Input */}
-            <div>
-              <label htmlFor="email" className="block text-white text-sm mb-2">
-                Email ID
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="Enter email address"
-                className={`w-full bg-[#0e0e10] border rounded px-4 py-3 text-white placeholder:text-white/30 focus:outline-none transition-colors ${
-                  errors.email 
-                    ? 'border-red-500 focus:border-red-500' 
-                    : 'border-white/10 focus:border-[#dc2626]'
-                }`}
-              />
-              {errors.email && (
-                <p className="text-red-400 text-xs mt-1">{errors.email}</p>
-              )}
-            </div>
-
-            {/* Address Input */}
-            <div>
-              <label htmlFor="address" className="block text-white text-sm mb-2">
-                Address
-              </label>
-              <textarea
-                id="address"
-                value={formData.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
-                placeholder="Enter complete blood bank address"
-                rows={3}
-                className={`w-full bg-[#0e0e10] border rounded px-4 py-3 text-white placeholder:text-white/30 focus:outline-none transition-colors resize-none ${
-                  errors.address 
-                    ? 'border-red-500 focus:border-red-500' 
-                    : 'border-white/10 focus:border-[#dc2626]'
-                }`}
-              />
-              {errors.address && (
-                <p className="text-red-400 text-xs mt-1">{errors.address}</p>
+              {errors.pincode && (
+                <p className="text-red-400 text-xs mt-1">{errors.pincode}</p>
               )}
             </div>
 
@@ -286,6 +237,28 @@ export function BloodBankRegister({ onBack, onRegisterSuccess }: BloodBankRegist
                   <p className="text-green-500 text-xs">Passwords match</p>
                 </div>
               )}
+            </div>
+
+            {/* Blood Group Select */}
+            <div>
+              <label htmlFor="bloodGroup" className="block text-white text-sm mb-2">
+                Blood Group
+              </label>
+              <select
+                id="bloodGroup"
+                value={formData.bloodGroup}
+                onChange={(e) => handleInputChange('bloodGroup', e.target.value)}
+                className="w-full bg-[#0e0e10] border rounded px-4 py-3 text-white focus:outline-none transition-colors border-white/10 focus:border-[#dc2626]"
+              >
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
             </div>
 
             {/* Register Button */}

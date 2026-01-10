@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { UserRole } from '../App';
 import { useAuth } from './AuthProvider';
@@ -26,59 +26,36 @@ const roleConfig = {
 };
 
 export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: LoginScreenProps) {
-  const { login: loginAuth, error: authError, isLoading: authLoading } = useAuth();
+  const { login, isLoading, error } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  
-  // Sync error from AuthProvider
-  useEffect(() => {
-    if (authError) {
-      setError(authError);
-    }
-  }, [authError]);
 
+  // Handle null role
   if (!role) {
     return null;
   }
 
   const config = roleConfig[role as keyof typeof roleConfig];
+
+  // If config is still undefined, return null or show error
   if (!config) {
     console.error('Invalid role:', role);
     return null;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
-
-    try {
-      // Use AuthProvider's login method which handles role check and state updates
-      const success = await loginAuth(email, password, role);
-      
-      if (success) {
-        // If successful, call onLoginSuccess callback
-        setError('');
+    login(email, password, role).then(() => {
+      if (onLoginSuccess) {
         onLoginSuccess();
-      } else {
-        // Error will be set by AuthProvider and synced via useEffect
-        // Show a generic message if no specific error is set yet
-        if (!authError) {
-          setError('Login failed. Please check your credentials.');
-        }
       }
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   return (
     <div className="min-h-screen bg-[#0e0e10] flex items-center justify-center p-6">
+      {/* Back Button */}
       <button
         onClick={onBack}
         className="fixed top-8 left-8 flex items-center gap-2 text-white/60 hover:text-white transition-colors group"
@@ -87,7 +64,9 @@ export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: Lo
         <span className="text-sm">Back to Home</span>
       </button>
 
+      {/* Login Card */}
       <div className="w-full max-w-[440px]">
+        {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-12">
           <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-xl">BS</span>
@@ -98,19 +77,24 @@ export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: Lo
           </div>
         </div>
 
+        {/* Login Form Card */}
         <div className="bg-[#171717] border border-white/10 rounded-lg p-10">
+          {/* Header */}
           <div className="mb-8">
             <h1 className="text-white text-3xl mb-2">{config.title}</h1>
             <p className="text-[#a3a3a3] text-sm">{config.subtitle}</p>
           </div>
 
+          {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-sm">
               {error}
             </div>
           )}
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email/Phone/ID Input */}
             <div>
               <label htmlFor="email" className="block text-white text-sm mb-2">
                 {role === 'donor' ? 'Phone Number' : 'ID'}
@@ -130,6 +114,7 @@ export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: Lo
               />
             </div>
 
+            {/* Password Input */}
             <div>
               <label htmlFor="password" className="block text-white text-sm mb-2">
                 Password
@@ -158,6 +143,7 @@ export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: Lo
               </div>
             </div>
 
+            {/* Forgot Password */}
             <div className="flex justify-end">
               <button
                 type="button"
@@ -167,6 +153,7 @@ export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: Lo
               </button>
             </div>
 
+            {/* Login Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -198,12 +185,14 @@ export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: Lo
             </button>
           </form>
 
+          {/* Create Account Link */}
           <div className="mt-6 text-center">
             <span className="text-[#a3a3a3] text-sm">Don't have an account? </span>
             <button
               type="button"
               className="text-[#dc2626] hover:text-[#b91c1c] text-sm transition-colors font-medium"
               onClick={() => {
+                // Functional for all roles now
                 if (onShowRegister) {
                   onShowRegister();
                 }
@@ -214,6 +203,7 @@ export function LoginScreen({ role, onBack, onLoginSuccess, onShowRegister }: Lo
           </div>
         </div>
 
+        {/* Help Text */}
         <p className="text-center text-white/40 text-xs mt-8">
           By logging in, you agree to our Terms of Service and Privacy Policy
         </p>

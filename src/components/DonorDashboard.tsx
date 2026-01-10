@@ -2,160 +2,173 @@ import { MapPin, Calendar, Clock, CheckCircle, Bell } from 'lucide-react';
 import { useState } from 'react';
 
 export function DonorDashboard() {
-  const [showSuccess] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
-      {showSuccess && (
-        <div className="fixed top-24 right-8 bg-green-900/90 border border-green-700 text-white px-6 py-4 rounded-lg shadow-2xl z-50">
-          <div className="flex items-center gap-3">
-            <CheckCircle className="w-5 h-5" />
-            <span>Availability updated successfully!</span>
+    <div className="min-h-screen p-6" style={{ backgroundColor: '#0e0e10' }}>
+      <div className="max-w-7xl mx-auto space-y-8">
+        {showSuccess && (
+          <div className="fixed top-24 right-8 bg-green-900/90 border border-green-700 text-white px-6 py-4 rounded-lg shadow-2xl z-50">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="w-5 h-5" />
+              <span>Availability updated successfully!</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT COLUMN */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Donor Profile */}
-          <div className="bg-[#171717] border border-white/10 rounded-lg p-6">
-            <h2 className="text-white mb-6">Donor Profile</h2>
-            <div className="grid grid-cols-2 gap-6">
-              <ProfileField label="Blood Group" value="A+" highlight />
-              <ProfileField label="Age" value="28 years" />
-              <ProfileField label="Weight" value="72 kg" />
-              <ProfileField label="Gender" value="Male" />
-              <ProfileField label="Last Donation" value="3 months ago" />
-              <ProfileField label="Location" value="Sector 21, Delhi" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* LEFT COLUMN */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Donor Profile */}
+            <div className="bg-[#171717] border border-white/10 rounded-lg p-6">
+              <h2 className="text-white mb-6">Donor Profile</h2>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="text-white">
+                  <div className="text-[#a3a3a3] text-sm mb-1">Blood Group</div>
+                  <div className="text-xl font-semibold text-red-500">A+</div>
+                </div>
+                <div className="text-white">
+                  <div className="text-[#a3a3a3] text-sm mb-1">Age</div>
+                  <div className="text-xl">28 years</div>
+                </div>
+                <div className="text-white">
+                  <div className="text-[#a3a3a3] text-sm mb-1">Weight</div>
+                  <div className="text-xl">72 kg</div>
+                </div>
+                <div className="text-white">
+                  <div className="text-[#a3a3a3] text-sm mb-1">Gender</div>
+                  <div className="text-xl">Male</div>
+                </div>
+                <div className="text-white">
+                  <div className="text-[#a3a3a3] text-sm mb-1">Last Donation</div>
+                  <div className="text-xl">3 months ago</div>
+                </div>
+                <div className="text-white">
+                  <div className="text-[#a3a3a3] text-sm mb-1">Location</div>
+                  <div className="text-xl">Sector 21, Delhi</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Availability Status */}
+            <div className="bg-[#171717] border border-white/10 rounded-lg p-6">
+              <h2 className="text-white mb-6">Availability Status</h2>
+              <div className="flex items-center justify-between">
+                <div className="text-white">
+                  <div className="text-[#a3a3a3] text-sm mb-2">Current Status</div>
+                  <div className="text-xl font-semibold text-green-500">Available</div>
+                </div>
+                <button
+                  onClick={() => setShowSuccess(true)}
+                  className="bg-[#dc2626] hover:bg-[#b91c1c] text-white px-6 py-3 rounded-lg transition-colors"
+                >
+                  Update Status
+                </button>
+              </div>
+            </div>
+
+            {/* Donation History */}
+            <div className="bg-[#171717] border border-white/10 rounded-lg p-6">
+              <h2 className="text-white mb-6">Donation History</h2>
+              <div className="space-y-4">
+                <div className="bg-[#0e0e10] border border-white/10 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-white font-semibold">Blood Donation Camp</div>
+                    <div className="text-[#a3a3a3] text-sm">3 months ago</div>
+                  </div>
+                  <div className="flex items-center gap-4 text-[#a3a3a3] text-sm">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>AIIMS, Delhi</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Oct 15, 2023</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-[#0e0e10] border border-white/10 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-white font-semibold">Emergency Donation</div>
+                    <div className="text-[#a3a3a3] text-sm">6 months ago</div>
+                  </div>
+                  <div className="flex items-center gap-4 text-[#a3a3a3] text-sm">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>Safdarjung Hospital</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Jul 20, 2023</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Upcoming Donation Drives */}
-          <div className="bg-[#171717] border border-white/10 rounded-lg p-6">
-            <h2 className="text-white mb-6">Upcoming Donation Drives</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <DriveCard
-                title="Community Blood Drive"
-                location="Sector 21 Community Center"
-                date="Jan 10, 2026"
-                time="9:00 AM - 5:00 PM"
-                organizer="City Blood Bank"
-              />
-              <DriveCard
-                title="Corporate Blood Donation Camp"
-                location="Tech Park, Phase 2"
-                date="Jan 15, 2026"
-                time="10:00 AM - 4:00 PM"
-                organizer="Apollo Blood Services"
-              />
+          {/* RIGHT COLUMN */}
+          <div className="space-y-6">
+            {/* Upcoming Drives */}
+            <div className="bg-[#171717] border border-white/10 rounded-lg p-6">
+              <h2 className="text-white mb-6">Upcoming Drives</h2>
+              <div className="space-y-4">
+                <div className="bg-[#0e0e10] border border-white/10 rounded-lg p-4">
+                  <div className="text-white font-semibold mb-2">Blood Donation Camp</div>
+                  <div className="space-y-2 text-[#a3a3a3] text-sm">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Dec 25, 2023</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>10:00 AM - 4:00 PM</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>Connaught Place, Delhi</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-[#0e0e10] border border-white/10 rounded-lg p-4">
+                  <div className="text-white font-semibold mb-2">Emergency Drive</div>
+                  <div className="space-y-2 text-[#a3a3a3] text-sm">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Jan 5, 2024</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>9:00 AM - 2:00 PM</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>RML Hospital, Delhi</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Notifications */}
+            <div className="bg-[#171717] border border-white/10 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-white">Notifications</h2>
+                <Bell className="w-5 h-5 text-white" />
+              </div>
+              <div className="space-y-3">
+                <div className="bg-[#0e0e10] border border-white/10 rounded-lg p-4">
+                  <div className="text-white text-sm">You are eligible to donate blood again!</div>
+                  <div className="text-[#a3a3a3] text-xs mt-1">2 days ago</div>
+                </div>
+                <div className="bg-[#0e0e10] border border-white/10 rounded-lg p-4">
+                  <div className="text-white text-sm">Blood donation camp near your location</div>
+                  <div className="text-[#a3a3a3] text-xs mt-1">1 week ago</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* RIGHT COLUMN */}
-        <div className="space-y-6">
-          {/* Nearby Blood Banks */}
-          <div className="bg-[#171717] border border-white/10 rounded-lg p-6">
-            <h2 className="text-white mb-4">Nearby Blood Banks</h2>
-            <div className="space-y-3">
-              <BloodBankCard name="City Blood Bank" distance="2.3 km" status="Open" />
-              <BloodBankCard name="Apollo Blood Services" distance="4.1 km" status="Open" />
-              <BloodBankCard name="Red Cross Blood Center" distance="5.8 km" status="Closed" />
-            </div>
-            <button className="w-full mt-4 bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm transition-colors">
-              View All on Map
-            </button>
-          </div>
-
-          
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------- Components used by Dashboard ---------- */
-
-function ProfileField({
-  label,
-  value,
-  highlight,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div>
-      <div className="text-[#a3a3a3] text-xs mb-1">{label}</div>
-      <div className={`text-sm ${highlight ? 'text-[#dc2626] text-xl' : 'text-white'}`}>
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function DriveCard({
-  title,
-  location,
-  date,
-  time,
-  organizer,
-}: {
-  title: string;
-  location: string;
-  date: string;
-  time: string;
-  organizer: string;
-}) {
-  return (
-    <div className="bg-[#0e0e10] border border-white/10 rounded-lg p-5">
-      <h3 className="text-white mb-3">{title}</h3>
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-[#a3a3a3] text-sm">
-          <MapPin className="w-4 h-4" />
-          {location}
-        </div>
-        <div className="flex items-center gap-2 text-[#a3a3a3] text-sm">
-          <Calendar className="w-4 h-4" />
-          {date}
-        </div>
-        <div className="flex items-center gap-2 text-[#a3a3a3] text-sm">
-          <Clock className="w-4 h-4" />
-          {time}
-        </div>
-        <div className="text-[#a3a3a3] text-xs">Organized by {organizer}</div>
-      </div>
-    </div>
-  );
-}
-
-function BloodBankCard({
-  name,
-  distance,
-  status,
-}: {
-  name: string;
-  distance: string;
-  status: string;
-}) {
-  return (
-    <div className="bg-[#0e0e10] border border-white/10 rounded-lg p-3">
-      <div className="flex justify-between items-center">
-        <div>
-          <div className="text-white text-sm">{name}</div>
-          <div className="text-[#a3a3a3] text-xs">{distance}</div>
-        </div>
-        <span
-          className={`text-xs px-2 py-1 rounded-full ${
-            status === 'Open'
-              ? 'bg-green-900/30 text-green-400'
-              : 'bg-white/5 text-[#a3a3a3]'
-          }`}
-        >
-          {status}
-        </span>
       </div>
     </div>
   );
