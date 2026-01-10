@@ -4,13 +4,16 @@ import {
   AlertCircle,
   Bell,
   ChevronRight,
+  Boxes,
   LogOut,
 } from 'lucide-react';
 import { UserRole } from '../App';
 import imgLogo from 'figma:asset/6c97523942fe730fbd4ae098955eb28b9f9eefad.png';
+
 import { DonorDashboard } from './DonorDashboard';
 import { HospitalDashboard } from './HospitalDashboard';
 import { BloodBankDashboard } from './BloodBankDashboard';
+import { BloodBankInventories } from './BloodBankInventories';
 
 interface DashboardProps {
   role: UserRole;
@@ -32,10 +35,12 @@ const roleConfig = {
       { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     ],
   },
+
   'blood-bank': {
     title: 'Blood Bank Portal',
     navItems: [
       { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
+      { id: 'inventories', label: 'Inventories', icon: <Boxes className="w-5 h-5" /> },
       {
         id: 'active-requests',
         label: 'Active Requests',
@@ -44,6 +49,7 @@ const roleConfig = {
       },
     ],
   },
+
   hospital: {
     title: 'Hospital Portal',
     navItems: [
@@ -64,10 +70,13 @@ export function Dashboard({ role, onLogout, children }: DashboardProps) {
 
     if (role === 'donor') return <DonorDashboard />;
     if (role === 'hospital') return <HospitalDashboard />;
+
     if (role === 'blood-bank') {
+      if (activeNav === 'inventories') return <BloodBankInventories />;
       if (activeNav === 'active-requests') return <BloodBankActiveRequests />;
       return <BloodBankDashboard />;
     }
+
     return null;
   };
 
@@ -132,6 +141,17 @@ export function Dashboard({ role, onLogout, children }: DashboardProps) {
 
               {!isCollapsed && item.badge && (
                 <span className="bg-[#dc2626] text-white text-xs px-2 py-0.5 rounded-full">
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg
+                ${
+                  activeNav === item.id
+                    ? 'bg-[#dc2626] text-white'
+                    : 'text-[#a3a3a3] hover:bg-white/5 hover:text-white'
+                }`}
+            >
+              {item.icon}
+              <span className="text-sm">{item.label}</span>
+              {item.badge && (
+                <span className="ml-auto bg-[#dc2626] text-white text-xs px-2 py-0.5 rounded-full">
                   {item.badge}
                 </span>
               )}
@@ -152,6 +172,7 @@ export function Dashboard({ role, onLogout, children }: DashboardProps) {
           >
             <LogOut className="w-5 h-5" />
             {!isCollapsed && <span>Logout</span>}
+            Logout
           </button>
         </div>
       </aside>
@@ -182,6 +203,8 @@ export function Dashboard({ role, onLogout, children }: DashboardProps) {
 
         <main className="flex-1 p-8 overflow-auto">{renderContent()}</main>
       </div>
+      {/* Main */}
+      <div className="flex-1 p-8 overflow-auto">{renderContent()}</div>
     </div>
   );
 }
@@ -194,6 +217,74 @@ function BloodBankActiveRequests() {
   return (
     <div className="text-white text-xl">
       Active Blood Requests content goes here...
+    <div className="max-w-7xl mx-auto space-y-6">
+      <h2 className="text-white text-xl">Active Blood Requests</h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {!handled.includes('1') && (
+          <ActiveRequestCard
+            id="1"
+            hospital="Apollo Hospital"
+            bloodGroup="O-"
+            units="3"
+            time="5 min ago"
+            onAction={handleAction}
+          />
+        )}
+        {!handled.includes('2') && (
+          <ActiveRequestCard
+            id="2"
+            hospital="Max Healthcare"
+            bloodGroup="B+"
+            units="2"
+            time="12 min ago"
+            onAction={handleAction}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ActiveRequestCard({
+  id,
+  hospital,
+  bloodGroup,
+  units,
+  time,
+  onAction,
+}: {
+  id: string;
+  hospital: string;
+  bloodGroup: string;
+  units: string;
+  time: string;
+  onAction: (id: string) => void;
+}) {
+  return (
+    <div className="bg-[#171717] border border-white/10 rounded-lg p-6">
+      <h3 className="text-white mb-3">{hospital}</h3>
+
+      <div className="text-[#a3a3a3] text-sm mb-4 space-y-1">
+        <div>Blood Group: <span className="text-white">{bloodGroup}</span></div>
+        <div>Units Required: <span className="text-white">{units}</span></div>
+        <div>Requested: {time}</div>
+      </div>
+
+      <div className="flex gap-3">
+        <button
+          onClick={() => onAction(id)}
+          className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-medium"
+        >
+          Accept
+        </button>
+        <button
+          onClick={() => onAction(id)}
+          className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-medium"
+        >
+          Decline
+        </button>
+      </div>
     </div>
   );
 }
